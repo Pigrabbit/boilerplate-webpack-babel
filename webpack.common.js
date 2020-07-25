@@ -1,5 +1,6 @@
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js",
@@ -8,11 +9,6 @@ module.exports = {
     filename: "index_bundle.js",
     publicPath: "public/",
   },
-  devServer: {
-    contentBase: path.join(__dirname, "public"),
-    compress: true,
-    port: 9000,
-  },
   module: {
     rules: [
       {
@@ -20,8 +16,15 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: ["file-loader"],
+        test: /\.(png|svg|jpe?g|gif|ico)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "images/[name].[ext]?[hash]",
+            },
+          },
+        ],
       },
       {
         test: /\.m?js$/,
@@ -35,6 +38,10 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin({
       filename: "style.css",
-    })
-  ]
+    }),
+    new CleanWebpackPlugin({
+      verbose: true,
+      filename: "index_bundle.js"
+    }),
+  ],
 };
